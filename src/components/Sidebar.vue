@@ -10,50 +10,25 @@
       unique-opened
       router
     >
-      <template v-for="item in menuItems">
-        <template v-if="item.children">
-          <el-submenu :key="item.path" :index="item.path">
-            <template #title>
-              <i :class="item.icon" />
-              <span>{{ item.title }}</span>
-            </template>
-            <template v-for="subItem in item.children">
-              <!-- 二级菜单，含子菜单 -->
-              <el-submenu
-                v-if="subItem.children"
-                :key="subItem.path"
-                :index="subItem.path"
-              >
-                <template #title>
-                  {{ subItem.title }}
-                </template>
-                <!-- 三级菜单 -->
-                <el-menu-item
-                  v-for="(threeItem, i) in subItem.children"
-                  :key="i"
-                  :index="threeItem.path"
-                >
-                  {{ threeItem.title }}
-                </el-menu-item>
-              </el-submenu>
-              <!-- 二级菜单，不含子菜单 -->
-              <el-menu-item v-else :key="subItem.path" :index="subItem.path">
-                {{ subItem.title }}
-              </el-menu-item>
-            </template>
-          </el-submenu>
+      <!-- 一级菜单 -->
+      <el-sub-menu
+        :index="item.id + ''"
+        v-for="item in menuItems"
+        :key="item.id"
+      >
+        <template #title>
+          <el-icon><user /></el-icon>
+          <span>{{ item.authName }}</span>
         </template>
-        <!-- 一级菜单 -->
-        <template v-else>
-          <el-menu-item :key="item.path" :index="item.path">
-            <i :class="item.icon" />
-            <template #title>
-              {{ item.title }}
-            </template>
-            <!-- <slot><span>{{ item.title }}</span></slot> -->
-          </el-menu-item>
-        </template>
-      </template>
+        <!-- 二级菜单 -->
+        <el-menu-item
+          :index="'/' + subItem.path"
+          v-for="subItem in item.children"
+          :key="subItem.id"
+          @click="saveNavState('/' + subItem.path)"
+          >{{ subItem.authName }}
+        </el-menu-item>
+      </el-sub-menu>
     </el-menu>
   </div>
 </template>
@@ -64,7 +39,7 @@ import { useRoute } from "vue-router";
 import { useStore } from "vuex";
 
 export default {
-  setup() {
+  /* setup() {
     const route = useRoute();
     const store = useStore();
 
@@ -74,64 +49,63 @@ export default {
     const collapse = computed(() => {
       return store.state.system.collapse;
     });
-    const menuItems = computed(() => {
-      return store.state.user.permissionMenu;
-    });
-
-    onMounted(() => {
-      getPermissionMenu();
-    });
+    
 
     // 获取当前用户权限菜单等（暂时放在组件内获取，不然刷新页面菜单会消失）
     const getPermissionMenu = async () => {
+      console.log(JSON.parse(sessionStorage["userInfo"]).data.data.token);
       // 动态获取菜单接口入参一般为token或者userId，因为采用mock模拟返回所以临时使用nickName作为角色入参，实际开发可根据接口差异修改入参
-      let par = { username: JSON.parse(sessionStorage["userInfo"]).nickName };
+      let par = {
+        token: JSON.parse(sessionStorage["userInfo"]).data.data.token,
+      };
       const res = await store.dispatch("user/getPermissionMenu", par);
       if (res) {
-        console.log("接口返回的菜单数组为：", res);
+        console.log("接口返回的菜单为：", res);
       }
     };
 
     return {
       currentPath,
       collapse,
-      menuItems,
+    };
+  }, */
+
+  // 2.0语法注释
+  data() {
+    return {
+      menuItems: [],
     };
   },
-  /* 
-	// 2.0语法注释
-	data() {
-		return {
-			// menuItems: []
-		};
-	},
-	computed: {
-		currentPath() {
-			return this.$route.path;
-		},
-		collapse() {
-			return this.$store.state.system.collapse
-		},
-		menuItems() {
-			return this.$store.state.user.permissionMenu
-		},
-	},
-	mounted() {
-		// 用户每次刷新页面都会重新获取一遍菜单，防止store中的数据丢失
-		this.getPermissionMenu()
-	},
-	methods: {
-		// 获取当前用户权限菜单等（暂时放在组件内获取，不然刷新页面菜单会消失）
-		async getPermissionMenu() {
-			// 动态获取菜单接口入参一般为token或者userId，因为采用mock模拟返回所以临时使用nickName作为角色入参，实际开发可根据接口差异修改入参
-			let par = { username: JSON.parse(sessionStorage['userInfo']).nickName }
-			const res = await this.$store.dispatch('user/getPermissionMenu', par)
-			if (res){ 
-				console.log('接口返回的菜单数组为：', res)
-				// this.menuItems = res
-			}
-		}
-	} */
+  computed: {
+    currentPath() {
+      return this.$route.path;
+    },
+    collapse() {
+      return this.$store.state.system.collapse;
+    },
+  },
+  mounted() {
+    // 用户每次刷新页面都会重新获取一遍菜单，防止store中的数据丢失
+    this.getPermissionMenu();
+  },
+  methods: {
+    // 获取当前用户权限菜单等（暂时放在组件内获取，不然刷新页面菜单会消失）
+    async getPermissionMenu() {
+      // 动态获取菜单接口入参一般为token或者userId，因为采用mock模拟返回所以临时使用nickName作为角色入参，实际开发可根据接口差异修改入参
+      let par = {
+        token: JSON.parse(sessionStorage["userInfo"]).data.data.token,
+      };
+      const { data: res } = await this.$store.dispatch(
+        "user/getPermissionMenu",
+        par
+      );
+      if (res) {
+        console.log("接口返回的菜单数组为：", res);
+        this.menuItems = res.data;
+      }
+      console.log(this.menuItems);
+    },
+  },
 };
 </script>
 

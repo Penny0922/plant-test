@@ -101,20 +101,23 @@ export default {
     const toLogin = async () => {
       const res = await store.dispatch("user/login", state.param);
       if (res) {
+        console.log("接口返回的登录数组为：", res);
         // await getPermissionMenu()
         router.push("/");
-        // $push('/'); // test code
+        // $push('/');
       }
     };
 
     // 获取当前用户权限菜单等
-    /* const getPermissionMenu = async () => {
-			let par = { username: JSON.parse(sessionStorage['userInfo']).nickName }
-			const res = await store.dispatch('user/getPermissionMenu', par)
-			if (res){
-				console.log('接口返回的菜单数组为：', res)
-			}
-		} */
+    const getPermissionMenu = async () => {
+      let par = {
+        token: JSON.parse(sessionStorage["userInfo"]).data.data.token,
+      };
+      const res = await store.dispatch("user/getPermissionMenu", par);
+      if (res) {
+        console.log("接口返回的菜单数组为：", res);
+      }
+    };
 
     // 暴露给tmp
     return {

@@ -14,7 +14,7 @@ export default {
     };
   },
   mounted() {
-    // console.log(this.$route) // test
+    // console.log(this.$route)
   },
   methods: {
     log(data) {
