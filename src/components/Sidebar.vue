@@ -11,24 +11,25 @@
       router
     >
       <!-- 一级菜单 -->
-      <el-sub-menu
-        :index="item.id + ''"
-        v-for="item in menuItems"
-        :key="item.id"
-      >
+
+      <el-submenu v-for="item in menuItems" :key="item.id" :index="item.id">
         <template #title>
-          <el-icon><user /></el-icon>
           <span>{{ item.authName }}</span>
         </template>
-        <!-- 二级菜单 -->
+
+        <!-- 二级菜单-->
         <el-menu-item
-          :index="'/' + subItem.path"
           v-for="subItem in item.children"
           :key="subItem.id"
-          @click="saveNavState('/' + subItem.path)"
-          >{{ subItem.authName }}
+          :index="'/' + subItem.path"
+        >
+          <template #title>
+            {{ subItem.authName }}
+          </template>
         </el-menu-item>
-      </el-sub-menu>
+      </el-submenu>
+
+      <!-- 一级菜单 -->
     </el-menu>
   </div>
 </template>
