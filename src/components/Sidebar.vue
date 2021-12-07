@@ -22,6 +22,7 @@
           v-for="subItem in item.children"
           :key="subItem.id"
           :index="'/' + subItem.path"
+          @click="saveNavState('/' + subItem.path)"
         >
           <template #title>
             {{ subItem.authName }}
@@ -75,12 +76,10 @@ export default {
   data() {
     return {
       menuItems: [],
+      currentPath: "",
     };
   },
   computed: {
-    currentPath() {
-      return this.$route.path;
-    },
     collapse() {
       return this.$store.state.system.collapse;
     },
@@ -88,6 +87,7 @@ export default {
   mounted() {
     // 用户每次刷新页面都会重新获取一遍菜单，防止store中的数据丢失
     this.getPermissionMenu();
+    this.currentPath = window.sessionStorage.getItem("currentPath");
   },
   methods: {
     // 获取当前用户权限菜单等（暂时放在组件内获取，不然刷新页面菜单会消失）
@@ -105,6 +105,11 @@ export default {
         this.menuItems = res.data;
       }
       console.log(this.menuItems);
+    },
+    saveNavState(currentPath) {
+      window.sessionStorage.setItem("currentPath", currentPath);
+      this.currentPath = currentPath;
+      console.log(this.currentPath);
     },
   },
 };

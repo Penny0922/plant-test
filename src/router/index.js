@@ -145,7 +145,9 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   document.title = `${to.meta.title} | test后台管理系统`;
   const token = sessionStorage.getItem("token");
-  const permissionMenu = store.state.user.permissionMenu;
+  const permissionMenu = store.dispatch("user/getPermissionMenu", token);
+  console.log("token", token)
+  console.log("permissionMenu",permissionMenu)
   if (!token && to.path !== "/login") {
     // 未登录重定向到登录（除了登录页，其他都需要登录后才能进入）
     next("/login");
