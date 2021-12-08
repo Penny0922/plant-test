@@ -31,7 +31,7 @@ contextInfo.keys().forEach((fileName) => {
     component: pathConfig.default,
   });
 });
-
+console.log(dynamicItems);
 const routes = [
   {
     path: "/",

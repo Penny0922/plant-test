@@ -43,55 +43,50 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column prop="id" label="ID" width="55" align="center" />
-        <el-table-column prop="name" label="用户名" />
-        <el-table-column label="账户余额">
-          <template #default="scope"> ￥{{ scope.row.money }} </template>
-        </el-table-column>
-        <el-table-column label="头像(查看大图)" align="center">
-          <template #default="scope">
-            <el-image
-              class="table-td-thumb"
-              :src="scope.row.thumb"
-              :preview-src-list="[scope.row.thumb]"
-            />
-          </template>
-        </el-table-column>
-        <el-table-column prop="address" label="地址" />
-        <el-table-column label="状态" align="center">
-          <template #default="scope">
-            <el-tag
-              :type="
-                scope.row.state === '成功'
-                  ? 'success'
-                  : scope.row.state === '失败'
-                  ? 'danger'
-                  : ''
-              "
-            >
-              {{ scope.row.state }}
-            </el-tag>
+        <el-table-column prop="index" label="ID" width="55" align="center" />
+        <el-table-column prop="username" label="用户名" />
+        <el-table-column label="姓名" prop="username"></el-table-column>
+        <el-table-column label="邮箱" prop="email"></el-table-column>
+        <el-table-column label="电话" prop="mobile"></el-table-column>
+        <el-table-column label="角色" prop="role_name"></el-table-column>
+        <el-table-column label="状态">
+          <template v-slot="scope">
+            <el-switch v-model="scope.row.mg_state" />
           </template>
         </el-table-column>
 
-        <el-table-column prop="date" label="注册时间" />
-        <el-table-column label="操作" width="180" align="center">
-          <template #default="scope">
+        <el-table-column label="操作" width="180px">
+          <template v-slot="scope">
+            <!-- 修改按钮 -->
             <el-button
-              type="text"
-              icon="el-icon-edit"
-              @click="handleEdit(scope.$index, scope.row)"
+              type="primary"
+              size="mini"
+              @click="showEditDialog(scope.row.id)"
+              class="el-icon-edit"
             >
-              编辑
             </el-button>
+            <!-- 删除按钮 -->
             <el-button
-              type="text"
-              icon="el-icon-delete"
-              class="red"
-              @click="handleDelete(scope.$index, scope.row)"
+              size="mini"
+              class="el-icon-delete"
+              @click="removeUserById(scope.row.id)"
             >
-              删除
             </el-button>
+            <!-- 分配角色按钮 -->
+            <el-tooltip
+              effect="dark"
+              content="分配角色"
+              placement="top"
+              :enterable="false"
+            >
+              <el-button
+                type="warning"
+                size="mini"
+                class="el-icon-setting"
+                @click="setRole(scope.row)"
+              >
+              </el-button>
+            </el-tooltip>
           </template>
         </el-table-column>
       </el-table>
@@ -159,8 +154,9 @@ export default {
     async getData() {
       console.log("这一步！！！");
       const res = await getTableData(this.query);
-      console.log("接口返回用户数据为：", res);
-      this.tableData = res.list;
+
+      this.tableData = res.data.data.users;
+      console.log("接口返回用户数据为：", this.tableData);
       this.pageTotal = res.pageTotal || 50;
       /* getTableData(this.query).then(res => {
                 console.log('接口返回数据为：', res);
