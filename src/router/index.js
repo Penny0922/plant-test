@@ -6,7 +6,7 @@ import {
 import Home from "@/views/home.vue";
 import store from "@/store";
 import { whiteList } from "@/common/config";
-
+import axios from "axios";
 // lss 2021/5/14。路由配置，改成自动读取views下文件动态配置，可解决多人开发时路由不易维护的难题（也可获取接口动态路由然后使用addRoutes注册）
 const contextInfo = require.context(
   // 获取文件，自动挂载在router下
@@ -144,10 +144,16 @@ const router = createRouter({
 // 全局钩子
 router.beforeEach((to, from, next) => {
   document.title = `${to.meta.title} | test后台管理系统`;
+  axios.interceptors.request.use((config) => {
+    // console.log(config)
+    config.headers.Authorization = window.sessionStorage.getItem("token");
+    // 在最后必须 return config
+    return config;
+  });
   const token = sessionStorage.getItem("token");
-  const permissionMenu = store.dispatch("user/getPermissionMenu", token);
-  console.log("token", token)
-  console.log("permissionMenu",permissionMenu)
+  const permissionMenu = store.state.user.permissionMenu;
+  console.log("token", token);
+  console.log("permissionMenu", store.state.user);
   if (!token && to.path !== "/login") {
     // 未登录重定向到登录（除了登录页，其他都需要登录后才能进入）
     next("/login");

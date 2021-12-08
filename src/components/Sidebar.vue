@@ -94,17 +94,16 @@ export default {
     async getPermissionMenu() {
       // 动态获取菜单接口入参一般为token或者userId，因为采用mock模拟返回所以临时使用nickName作为角色入参，实际开发可根据接口差异修改入参
       let par = {
-        token: JSON.parse(sessionStorage["userInfo"]).data.data.token,
+        token: JSON.parse(sessionStorage["userInfo"]).token,
       };
       const { data: res } = await this.$store.dispatch(
         "user/getPermissionMenu",
         par
       );
       if (res) {
-        console.log("接口返回的菜单数组为：", res);
         this.menuItems = res.data;
       }
-      console.log(this.menuItems);
+      console.log("接口返回的菜单数组为：", this.menuItems);
     },
     saveNavState(currentPath) {
       window.sessionStorage.setItem("currentPath", currentPath);
