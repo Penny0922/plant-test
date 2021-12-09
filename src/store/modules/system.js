@@ -22,7 +22,8 @@ const homeItem = [
 const mutations = {
   // 删除标签页
   delTagsItem(state, data) {
-    state.tagsList.splice(data.index, 1);
+    var index = state.tagsList.findIndex((item) => item.name === data.name);
+    state.tagsList.splice(index, 1);
   },
   // 新增标签页
   setTagsItem(state, data) {

@@ -11,7 +11,7 @@
       >
         {{ item.title }}
 
-        <span class="tags-li-icon" @click="closeTags(index)">
+        <span class="tags-li-icon" @click="closeTags(item)">
           <i v-if="item.path !== '/dashboard'" class="el-icon-close" />
         </span>
       </li>
@@ -69,16 +69,12 @@ export default {
       this.$router.push({ path: tab.path });
     },
     // 关闭单个标签
-    closeTags(index) {
-      const delItem = this.tagsList[index];
-      this.$store.commit("system/delTagsItem", { index });
-      const item = this.tagsList[index]
-        ? this.tagsList[index]
-        : this.tagsList[index - 1];
-      if (item) {
-        delItem.path === this.$route.fullPath && this.$router.push(item.path);
-      } else {
-        this.$router.push("/");
+    closeTags(tab) {
+      this.$store.commit("system/delTagsItem", tab);
+      if (tab.path === this.$route.path) {
+        var tagsList = this.$store.state.tagsList;
+        console.log("关闭标签", tagsList);
+        this.$router.push({ path: tagsList[tagsList.length - 1].path });
       }
     },
     // 关闭全部标签
