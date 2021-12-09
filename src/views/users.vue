@@ -43,7 +43,7 @@
         @selection-change="handleSelectionChange"
       >
         <el-table-column type="selection" width="55" align="center" />
-        <el-table-column prop="index" label="ID" width="55" align="center" />
+        <el-table-column type="index" label="ID" width="55" align="center" />
         <el-table-column prop="username" label="用户名" />
         <el-table-column label="姓名" prop="username"></el-table-column>
         <el-table-column label="邮箱" prop="email"></el-table-column>
@@ -90,12 +90,12 @@
           </template>
         </el-table-column>
       </el-table>
+      <!-- 分页 -->
       <div class="pagination">
         <el-pagination
-          background
-          layout="total, prev, pager, next"
-          :current-page="query.pageIndex"
-          :page-size="query.pageSize"
+          layout="total, prev, pager, next, jumper"
+          v-model:currentPage="query.pagenum"
+          :page-size="query.pagesize"
           :total="pageTotal"
           @current-change="handlePageChange"
         />
@@ -142,8 +142,6 @@ export default {
       editVisible: false,
       pageTotal: 0,
       form: {},
-      idx: -1,
-      id: -1,
     };
   },
   created() {
@@ -153,11 +151,11 @@ export default {
     // 获取表格数据
     async getData() {
       console.log("这一步！！！");
-      const res = await getTableData(this.query);
-
-      this.tableData = res.data.data.users;
+      const { data: res } = await getTableData(this.query);
+      this.tableData = res.data.users;
       console.log("接口返回用户数据为：", this.tableData);
-      this.pageTotal = res.pageTotal || 50;
+      this.pageTotal = res.data.total;
+      console.log(this.pageTotal);
       /* getTableData(this.query).then(res => {
                 console.log('接口返回数据为：', res);
                 this.tableData = res.list;
@@ -213,7 +211,7 @@ export default {
     // 分页导航
     handlePageChange(val) {
       // this.$set(this.query, 'pageIndex', val);
-      this.query.pageIndex = val;
+      this.query.pagenum = val;
       this.getData();
     },
   },

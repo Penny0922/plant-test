@@ -26,7 +26,9 @@ const mutations = {
   },
   // 新增标签页
   setTagsItem(state, data) {
-    state.tagsList.push(data);
+    if (state.tagsList.findIndex((item) => item.path === data.path) == -1) {
+      state.tagsList.push(data);
+    }
   },
   // 关闭所有（首页不可关闭）
   clearTags(state) {
@@ -65,7 +67,11 @@ const mutations = {
   },
 };
 
-const actions = {};
+const actions = {
+  saveTab(context, data) {
+    context.commit("setTagsItem", data);
+  },
+};
 
 export default {
   namespaced: true,

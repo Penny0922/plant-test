@@ -1,15 +1,16 @@
 <template>
-  <div v-if="showTags" class="tags">
+  <div class="tags">
     <ul>
       <li
-        v-for="(item, index) in tagsList"
-        :key="index"
+        v-for="item of tagsList"
+        :key="item.path"
+        :index="item.path"
         class="tags-li"
         :class="{ active: isActive(item.path) }"
+        @click="goTo(item)"
       >
-        <router-link :to="item.path" class="tags-li-title">
-          {{ item.title }}
-        </router-link>
+        {{ item.title }}
+
         <span class="tags-li-icon" @click="closeTags(index)">
           <i v-if="item.path !== '/dashboard'" class="el-icon-close" />
         </span>
@@ -34,21 +35,18 @@
 
 <script>
 export default {
-  computed: {
-    tagsList() {
-      return this.$store.state.system.tagsList;
-    },
-    showTags() {
-      return this.tagsList.length > 0;
-    },
+  data() {
+    return {
+      tagsList: this.$store.state.system.tagsList,
+    };
   },
   watch: {
     $route(newValue) {
       this.setTags(newValue);
     },
   },
-  created() {
-    this.setTags(this.$route);
+  mounted() {
+    this.$store.dispatch("system/saveTab", this.$route);
 
     /* 
 			1.父子组件传递，父向子传递采用 props，子向父采用事件 emit。父组件通过 $refs 调用子组件的 method。
@@ -64,7 +62,11 @@ export default {
   },
   methods: {
     isActive(path) {
-      return path === this.$route.fullPath;
+      return path === this.$route.path;
+    },
+    goTo(tab) {
+      //跳转标签
+      this.$router.push({ path: tab.path });
     },
     // 关闭单个标签
     closeTags(index) {
